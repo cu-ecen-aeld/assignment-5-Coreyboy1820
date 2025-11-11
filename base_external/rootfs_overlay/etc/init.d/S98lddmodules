@@ -27,7 +27,6 @@ GetFilePathForModule() {
 
 case "$1" in
   start)
-    depmod
     currentModule="hello"
     echo "Load $currentModule module, exit on failure"
     filePath=$(GetFilePathForModule "$currentModule")

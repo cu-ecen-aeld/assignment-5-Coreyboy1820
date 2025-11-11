@@ -12,5 +12,11 @@ LDD_GIT_SUBMODULES = YES
 
 MODULE_SUBDIRS = scull misc-modules
 
+define LDD_INSTALL_TARGET_CMDS
+    mkdir -p $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra
+    find $(@D) -name '*.ko' -exec cp {} $(TARGET_DIR)/lib/modules/$(LINUX_VERSION_PROBED)/extra/ \;
+    depmod -a -b $(TARGET_DIR) $(LINUX_VERSION_PROBED)
+endef
+
 $(eval $(kernel-module))
 $(eval $(generic-package))

@@ -1,0 +1,95 @@
+LoadDevice() {
+    module=$1
+    device=$1
+    major=$2
+    minor=$3
+    mode="664"
+
+    echo "module $module, device $device, major $major, minor $minor"
+
+    if [ ! -z ${major} ]; then
+        echo "Remove any existing /dev node for /dev/${device}"
+        rm -f /dev/${device}
+
+        echo "Add a node for our device at /dev/${device} using mknod with major minor number: $major $minor"
+        mknod /dev/${device} c ${major} ${minor}
+
+        echo "Change access mode to ${mode}"
+        chmod $mode /dev/${device}
+    else
+        echo "No device found in /proc/devices for driver ${module} (this driver may not allocate a device)"
+    fi
+}
+
+GetFilePathForModule() {
+  echo "/lib/modules/$(uname -r)/$1.ko"
+}
+
+case "$1" in
+  start)
+    currentModule="hello"
+    echo "Load $currentModule module, exit on failure"
+    filePath=$(GetFilePathForModule "$currentModule")
+    modprobe $currentModule.ko || exit 1
+
+    currentModule="faulty"
+    echo "Load $currentModule module, exit on failure"
+    filePath=$(GetFilePathForModule "$currentModule")
+    insmod "$filePath" || exit 1
+    echo "Get the major number (allocated with allocate_chrdev_region) from /proc/devices"
+    major=$(awk "\$2==\"$currentModule\" {print \$1}" /proc/devices)
+    LoadDevice $currentModule $major 0
+
+    currentModule="scull"
+    echo "Load $currentModule module, exit on failure"
+    filePath=$(GetFilePathForModule "$currentModule")
+    insmod "$filePath" || exit 1
+    echo "Get the major number (allocated with allocate_chrdev_region) from /proc/devices"
+    major=$(awk "\$2==\"$currentModule\" {print \$1}" /proc/devices)
+    
+    LoadDevice ${currentModule}0 $major 0
+    LoadDevice ${currentModule}1 $major 1
+    LoadDevice ${currentModule}2 $major 2
+    LoadDevice ${currentModule}3 $major 3
+
+    currentModule="scullpipe"
+
+    LoadDevice ${currentModule}0 $major 4
+    LoadDevice ${currentModule}1 $major 5
+    LoadDevice ${currentModule}2 $major 6
+    LoadDevice ${currentModule}3 $major 7
+
+    currentModule="scull"
+
+    LoadDevice ${currentModule}single $major "8"
+
+    LoadDevice ${currentModule}uid $major "9"
+
+    LoadDevice ${currentModule}wuid $major "10"
+
+    LoadDevice ${currentModule}priv $major "11"
+
+    echo "."
+    ;;
+  stop)
+    currentModule="hello"
+    rmmod $currentModule || exit 1
+
+    currentModule="scull"
+    currentDevice="scull"
+    rmmod $currentModule || exit 1
+
+    rm -f /dev/${currentDevice} /dev/${currentDevice}[0-3] 
+    rm -f /dev/${currentDevice}priv
+    rm -f /dev/${currentDevice}pipe /dev/${currentDevice}pipe[0-3]
+    rm -f /dev/${currentDevice}single
+    rm -f /dev/${currentDevice}uid
+    rm -f /dev/${currentDevice}wuid
+
+    echo "."
+    ;;
+  *)
+    echo "Usage: $0 {start|stop}"
+    exit 1
+    ;;
+esac

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LDD_VERSION = cd0bc800de0a564fda9b5565506a48d384e73c2b
+LDD_VERSION = ce538d4c4d82659e5c307ac06d67638e66b43b5e
 LDD_SITE = git@github.com:cu-ecen-aeld/assignment-7-Coreyboy1820.git
 
 LDD_SITE_METHOD = git
@@ -14,3 +14,4 @@ MODULE_SUBDIRS = scull misc-modules
 
 $(eval $(kernel-module))
 $(eval $(generic-package))
+LDD_DEPENDENCIES = linux

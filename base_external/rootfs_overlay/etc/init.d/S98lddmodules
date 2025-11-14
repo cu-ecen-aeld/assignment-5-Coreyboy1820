@@ -39,12 +39,12 @@ case "$1" in
     currentModule="hello"
     echo "Load $currentModule module, exit on failure"
     filePath=$(GetFilePathForModule "$currentModule")
-    modprobe $currentModule || exit 1
+    modprobe $currentModule
 
     currentModule="faulty"
     echo "Load $currentModule module, exit on failure"
     filePath=$(GetFilePathForModule "$currentModule")
-    insmod "$filePath" || exit 1
+    insmod "$filePath"
     echo "Get the major number (allocated with allocate_chrdev_region) from /proc/devices"
     major=$(awk "\$2==\"$currentModule\" {print \$1}" /proc/devices)
     LoadDevice $currentModule $major 0
@@ -52,7 +52,7 @@ case "$1" in
     currentModule="scull"
     echo "Load $currentModule module, exit on failure"
     filePath=$(GetFilePathForModule "$currentModule")
-    insmod "$filePath" || exit 1
+    insmod "$filePath"
     echo "Get the major number (allocated with allocate_chrdev_region) from /proc/devices"
     major=$(awk "\$2==\"$currentModule\" {print \$1}" /proc/devices)
     
@@ -82,11 +82,11 @@ case "$1" in
     ;;
   stop)
     currentModule="hello"
-    rmmod $currentModule || exit 1
+    rmmod $currentModule
 
     currentModule="scull"
     currentDevice="scull"
-    rmmod $currentModule || exit 1
+    rmmod $currentModule
 
     rm -f /dev/${currentDevice} /dev/${currentDevice}[0-3] 
     rm -f /dev/${currentDevice}priv

@@ -10,8 +10,7 @@ LDD_SITE = git@github.com:cu-ecen-aeld/assignment-7-Coreyboy1820.git
 LDD_SITE_METHOD = git
 LDD_GIT_SUBMODULES = YES
 
-MODULE_SUBDIRS = scull misc-modules
+LDD_MODULE_SUBDIRS = scull misc-modules
 
 $(eval $(kernel-module))
 $(eval $(generic-package))
-LDD_DEPENDENCIES = linux

@@ -34,8 +34,6 @@ GetFilePathForModule() {
 
 case "$1" in
   start)
-    depmod -a $(uname -r)
-
     currentModule="hello"
     echo "Load $currentModule module, exit on failure"
     filePath=$(GetFilePathForModule "$currentModule")

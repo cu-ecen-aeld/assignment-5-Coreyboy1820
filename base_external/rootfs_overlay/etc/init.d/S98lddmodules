@@ -1,3 +1,10 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          lddmodules
+# Required-Start:    $local_fs
+# Default-Start:     2 3 4 5
+# Short-Description: Load LDD and AESD modules
+### END INIT INFO
 LoadDevice() {
     module=$1
     device=$1
